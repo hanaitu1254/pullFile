@@ -1,0 +1,163 @@
+let set = new Set();
+
+//名前入力
+$(function(){
+    $("#addname").on("click",function(){
+        let temphtml = "";
+        if($("#inputname").val().length !== 0){//空欄じゃないか？
+
+            set.add($("#inputname").val());
+            console.log(set.size); //set内追加判定、確認
+
+            if(set.has($("#addname").val())){//valueは重複したか？
+
+                console.log('入力してください');
+
+            } else {
+
+                //反復処理でリスト出力
+                $("#allmem").html("");
+                for(let out of set){
+                    temphtml = `<p><input type="checkbox" name="name" id="${out}" class="cbox" value="${out}"
+                    ><label for="${out}">${out}</label><br></p>`;
+                    $("#allmem").prepend(temphtml);
+                }
+            }
+
+            //各ボタン押せる状態
+            $("input.untouch").removeAttr("disabled");
+            if(set.size>1){
+                $("select.untouch").removeAttr("disabled");
+            }
+
+
+        } else {
+            console.log('入力してください');
+        }
+        $("#inputname").val("");//textboxリセット
+    });
+
+    //名前の削除実行
+
+    //削除
+    $("#delname").on("click",function(){
+        const checker = $(".cbox");
+        for (let a=0; a<checker.length; a++) {
+            if (checker[a].checked) {
+                set.delete(checker[a].value);
+                console.log('現在' + set.size + '人');
+            }
+        }
+
+        //再生成
+        $("#allmem").html("");
+        let temphtml = "";
+        for(let output of set){
+            temphtml = `<p><input type="checkbox" name="name" id="${output}" class="cbox" value="${output}"
+            ><label for="${output}">${output}</label><br></p>`;
+            $("#allmem").prepend(temphtml);
+        }
+    });
+});
+
+function startChange(){
+    start = setInterval(shaffle, 100);
+}
+let sec = 0;
+let s = 0;
+function shaffle(){
+    sec++;
+    if(sec===20){
+        clearInterval(start);
+        $("#start").removeAttr("disabled");
+
+        //TODOフェードイン表示
+        $("#result1 span").before("当選したのは ")
+        .append($("label").eq(s).text())
+        .after(" です!");
+
+        $("#result1").fadeIn("slow");
+    }
+    $("#allmem p").eq(s).css("background-color","");
+    s = Math.floor(Math.random()*$(".cbox").length);
+    $("#allmem p").eq(s).css("background-color","red");
+}
+
+
+
+//TODOできれば総当たり表生成(たぶんfor)
+
+let plyList = [];
+let newList = [];
+let a;
+
+function startRound(){
+    let ready = confirm('登録したメンバーで抽選を始めます。\r\nゲームを開始しますか？');
+    if(ready){
+        $("#result1").css("display","none");
+        for (let i=0; i<$(".cbox").length; i++) {
+            plyList.push($(".cbox").eq(i).val());
+        }
+        console.log(plyList);
+        while (plyList.length) {
+            const ran = Math.floor(Math.random()*plyList.length);
+            newList.push(plyList[ran]);
+            plyList.splice(ran,1);
+        }
+        console.log(newList);
+    }
+}
+
+// const startGame = () => {
+//             //ここから表作る
+//             let tempHtml = "";
+//             tempHtml += `<tr> <td>-</td>`;
+//             for (c=0;c<newList.length;c++) {
+//                 tempHtml += `<td>${newList[c]}</td>`;
+//             }
+//             tempHtml += `</tr>`;
+//             for (d=0;d<newList.length;d++) {
+//                 tempHtml += `<tr><td>${newList[d]}</td>`;
+//                 for (e=0;e<newList.length;e++) {
+//                     let x;
+//                     if(d>e){
+//                         x = `${d}-${e}`;
+//                     } else if (d<e) {
+//                         x = `${e}-${d}`;
+//                     }
+//                     if (d==e) {
+//                         tempHtml += `<td>-</td>`;
+//                     } else {
+//                         tempHtml += `<td><input type="radio" class="class" name="${x}" value="${newList[d]}"></td>`;
+//                     }
+//                 }
+//             }
+//             tournamentArea.innerHTML = tempHtml; //最後にまとめて追加
+//         }
+//     }
+
+
+
+//TODOあればいいなタイマー機能
+//TODO予備
+//TODO予備
+
+//各種動作開始(optionから選択式)
+$("#start").on("click",function(){
+    if($("#choice").val()=="0"){
+        sec = 0;
+        $("#result1").text();
+        startChange();
+        $("#start").attr("disabled");
+    } else if($("#choice").val()=="1"){
+        sec = 0;
+        $("#start").attr("disabled");
+        startRound();
+    }
+});
+
+
+// check(count)if(カウント目的回数なら終了)
+// timerActive
+// timerLest
+// count++
